@@ -61,9 +61,17 @@ resource "google_service_account" "firewall-remediate-sa" {
   display_name = "${var.name} firewall remediate"
 }
 
-resource "google_project_iam_member" "firewall-remediate-sa-member" {
-  project = "${var.project}"
-  role    = "roles/compute.networkAdmin"
+resource "google_organization_iam_custom_role" "firewall-remediate-custom-role" {
+  role_id     = "firewall_remediation_cfn"
+  org_id      = "${var.org_id}"
+  title       = "Firewall Remediation CFN"
+  description = "Minimally Privlidged Role to allow for Get and Update Firewalls"
+  permissions = ["compute.firewalls.get", "compute.firewalls.update","compute.networks.updatePolicy"]
+}
+
+resource "google_organization_iam_member" "firewall-remediate-sa" {
+  org_id = "${var.org_id}"
+  role    = "organizations/${var.org_id}/roles/${google_organization_iam_custom_role.firewall-remediate-custom-role.role_id}"
   member  = "serviceAccount:${google_service_account.firewall-remediate-sa.email}"
 }
 

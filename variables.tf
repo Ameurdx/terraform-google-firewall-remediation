@@ -16,7 +16,7 @@
 
  variable "org_sink_filter" {
      description = "The Log Filter to apply to the Org Level export.  Defaults to all activity logs"
-     default     = "/logs/cloudaudit.googleapis.com%2Factivity"
+     default     = "logName:logs/compute.googleapis.com%2Factivity_log resource.type:gce_firewall_rule jsonPayload.event_subtype: (compute.firewalls.insert OR compute.firewalls.update OR compute.firewalls.patch) jsonPayload.event_type:GCE_API_CALL"
  }
 
  
