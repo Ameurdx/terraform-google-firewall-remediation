@@ -62,8 +62,8 @@ gcloud compute firewall-rules create demo-rule --direction=INGRESS --priority=10
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | org_id | The ID of the Organization to provision resources | string | - | yes |
-| region | The location of resources | string | `us-east1` | no |
 | project |The ID of the project where the pub/sub topic will be installed  | string | - | yes |
+| region | The location of resources | string | `us-east1` | no |
 | name | Prefix for resource naming | string | `eds` | no |
 | org_sink_filter | The Log Filter to apply to the Org Level export.  Defaults to all activity logs | string | `logName:logs/compute.googleapis.com%2Factivity_log resource.type:gce_firewall_rule jsonPayload.event_subtype:compute.firewalls.insert jsonPayload.event_type:GCE_API_CALL` | no |
 
