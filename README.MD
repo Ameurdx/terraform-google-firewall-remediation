@@ -83,8 +83,6 @@ The workflow is as follows:
 
 ![workflow](./img/Cloudfunction-Firewall-Fix.png)
 
-## Steps
-
 ## Log Evaulation Diagram
 
 The following diagram illustrates how exported log entries are treated in Stackdriver Logging:
