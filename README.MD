@@ -21,7 +21,7 @@ git clone https://github.com/ScaleSec/terraform-google-firewall-remediation.git
 ```
 cd terraform-google-firewall-remediation
 ```
-3. Create an Auto.TFVars file
+3. Create an terraform.auto.tfvars file - Replace values before running command
 ```
 cat > terraform.auto.tfvars <<EOF
   org_id                       = "<<replace with your org id>>"
@@ -42,7 +42,7 @@ terraform plan
 terraform apply
 ```
 
-6. Open Cloudshell and create a firewall rule
+6. Open Cloudshell and create a firewall rule using the command below
 
 ```
 gcloud compute firewall-rules create demo-rule --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
