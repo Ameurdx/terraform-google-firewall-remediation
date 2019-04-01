@@ -1,24 +1,61 @@
-# Terraform Stackdriver Aggregated Export to PubSub
+# Terraform - Event Driven Security Demonstration
 
-The Terraform module can be used to quickly provision an aggregated export sink to export stackdriver logs to pubsub and then splunk
+The Terraform module is used to demonstrate the concepts discussed in [Article](https://medium.com/p/9408929240ea/edit)
 
 ## Prerequisites 
 
-You must have the Logs Configuration Writer IAM role for the organization to create the sink. For more information about Stackdriver Logging IAM roles, see the [Access control guide](https://cloud.google.com/logging/docs/access-control).
+The user running terraform must have the following permissions:
+* Organizaton Administrator
+* PubSub Administrator
+* CloudFunction Administrator
+* Logging Administrator
+* Storage Administrator
 
 ## Usage
-The usage of the module within your own main.tf file is as follows:
 
-```hcl
-    module "aggregated-export-to-pubsub" {
-      source                       = ./path-to-your-source
-      org_id                       = "395176825394"
-      region                       = "us-east1"
-      project                      = "my-stackdriver-project"
-      name                         = "agg-export-demo"
-      org_sink_filter              = "/logs/cloudaudit.googleapis.com%2Factivity"
-    }
+1. Clone Repository Locally
 ```
+git clone https://github.com/ScaleSec/terraform-google-firewall-remediation.git
+```
+2. Change Directory
+```
+cd terraform-google-firewall-remediation
+```
+3. Create an Auto.TFVars file
+```
+cat > vars.tfvars <<EOF
+  org_id                       = "<<replace with your org id>>"
+  project                      = "<<replace with your project id"
+EOF
+```
+
+4. Authenticate to Google Cloud using Application Default Credentials
+```
+gcloud auth application-default login
+```
+
+5. Run Terraform
+
+```
+terraform init
+terraform plan
+terraform apply
+```
+
+6. Open Cloudshell and create a firewall rule
+
+```
+gcloud compute --project=scalesec-dev firewall-rules create demo-rule --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
+```
+
+7. Navigate to the Firewall just created in the [Firewall Rules Page](https://console.cloud.google.com/networking/firewalls/) in the Google Cloud Console and.
+
+8. Validate that the Firewall Rule is diabled
+
+9. Navigate to the [CloudFunctions page](https://console.cloud.google.com/functions/) in the Cloud Console and select the function provisioned in step 5
+
+10.  Click the 'View Logs' Button to view the outputs of the function
+
 
 ## Inputs
 
@@ -27,18 +64,26 @@ The usage of the module within your own main.tf file is as follows:
 | org_id | The ID of the Organization to provision resources | string | - | yes |
 | region | The location of resources | string | `us-east1` | no |
 | project |The ID of the project where the pub/sub topic will be installed  | string | - | yes |
-| name | Prefix for resource naming | string | `sdrvr-psb-demo` | no |
-| org_sink_filter | The Log Filter to apply to the Org Level export.  Defaults to all activity logs | string | `/logs/cloudaudit.googleapis.com%2Factivity` | no |
+| name | Prefix for resource naming | string | `eds` | no |
+| org_sink_filter | The Log Filter to apply to the Org Level export.  Defaults to all activity logs | string | `logName:logs/compute.googleapis.com%2Factivity_log resource.type:gce_firewall_rule jsonPayload.event_subtype:compute.firewalls.insert jsonPayload.event_type:GCE_API_CALL` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| splunk-sa-key | Service Account Key used for Splunk to Subscribe to the Pubsub |
 | topic-name    | The name of the pub/sub topic where logs are sent to |
-| subscription-name | The name of the subscription which Splunk should pull logs from |
-| project           | The Project which hosts the pubsub topic and subscription resources |
+| project       | The Project which hosts the pubsub topic and subscription resources |
 | organization_sink_writer | The Service Account associated with the organization sink.  Ensure this account has publish permissions to a pubsub topic |
+
+## HLD
+
+In this demonstration, we will show how to use CloudFunctions to automatically remediate open firewall rules.
+
+The workflow is as follows:
+
+![workflow](./img/Cloudfunction-Firewall-Fix.png)
+
+## Steps
 
 ## Log Evaulation Diagram
 
@@ -47,38 +92,3 @@ The following diagram illustrates how exported log entries are treated in Stackd
 ![Log Eval](./img/life_of_a_log.png)
 
 Exporting involves writing a filter that selects the log entries you want to export, and choosing a destination in Cloud Storage, BigQuery, or Cloud Pub/Sub. The filter and destination are held in an object called a sink. Sinks can be created in projects, organizations, folders, and billing accounts.
-
-## HLD
-
-This solution uses an  aggregated export sink that can export log entries from all the projects, folders, and billing accounts of an organization. As an example, you might use this feature to export audit log entries from an organization's projects to a central location.
-
-
-![HLD](./img/GCP-Export-Logging.png)
-
-***NOTE: Organization, Folder, and Projects __NOT__ created with this module ***
-
-Terraform Performs Tasks 1-7 Below.  Step 8 is manual or automated using Splunk Configuration methods
-
-1. Create a pub/sub topic in a child account
-2. Create a pub/sub subscription and subscribe to the topic created in step 1
-3. Create a service account for Splunk
-4. Assign permission to the service account created in step 3 with permissions to subscribe to the subscription created in step 2.
-5. Create a JSON Credential Key file for Splunk to use for authentication 
-6. Create an aggregated export sink at the root organization level.  We use the "include-children" flag when creating the sink to include all projects and folders within the organization.
-7. Give the aggregated export sinks Service Account (created automatically when the aggregated export sink was created), the "roles/pubsub.publisher" role on the topic from step 1
-8. Configure the Splunk App for GCP
-
-
-## Configuring Splunk
-
-Follow [Docs](https://docs.splunk.com/Documentation/AddOns/released/GoogleCloud/About) for Configuration of the "Splunk Add on for GCP"
-
-During configuraiton the application will ask for credentials.  The Service Account Key was already generated by Terraform and output to the statefile as a sensitive output.  To output the contents of this key use the following command
-
-```shell
-terraform output splunk-sa-key
-```
-
-***NOTE: This Service Account Key File is NOT secure for this demonstration.  The Key file is output as a base64 encoded value within the Statefile, menaing if this file were to be compromised, the key file could also be compromised.
-
-It is recommended for production to you use a more secure method to provide the keyfile to splunk

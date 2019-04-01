@@ -46,7 +46,7 @@ data "archive_file" "source" {
 resource "google_storage_bucket" "bucket" {
   provider = "google"
   project  = "${var.project}"
-  name     = "${var.name}-firewall-insert-cf"
+  name     = "${lower(var.name)}-firewall-insert-cf"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -57,7 +57,7 @@ resource "google_storage_bucket_object" "archive" {
 }
 
 resource "google_service_account" "firewall-remediate-sa" {
-  account_id   = "${var.name}-firewall-remediate"
+  account_id   = "${lower(var.name)}-firewall-remediate"
   display_name = "${var.name} firewall remediate"
 }
 
@@ -77,7 +77,7 @@ resource "google_organization_iam_member" "firewall-remediate-sa" {
 
 resource "google_cloudfunctions_function" "firewall-remediate-function" {
   provider              = "google-beta"
-  name                  = "${var.name}-firewall-remediate"
+  name                  = "${lower(var.name)}-firewall-remediate"
   description           = "Google Cloud Function to remediate firewall rules open to the internet"
   available_memory_mb   = 128
   source_archive_bucket = "${google_storage_bucket.bucket.name}"
