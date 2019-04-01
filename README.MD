@@ -23,7 +23,7 @@ cd terraform-google-firewall-remediation
 ```
 3. Create an Auto.TFVars file
 ```
-cat > vars.tfvars <<EOF
+cat > terraform.auto.tfvars <<EOF
   org_id                       = "<<replace with your org id>>"
   project                      = "<<replace with your project id"
 EOF
