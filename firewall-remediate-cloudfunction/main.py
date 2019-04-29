@@ -13,7 +13,7 @@ def process_log_entry(data, context):
 
     service = create_service()
     print('Describing Firewall')
-    disabled = check_for_disabled(project_id,service,firewall_name)
+    disabled = check_for_disabled(project_id, service, firewall_name)
     source_ranges = get_source_ranges(project_id, service, firewall_name)
     allow_all = check_for_allowed_all(project_id, service, firewall_name)
 
