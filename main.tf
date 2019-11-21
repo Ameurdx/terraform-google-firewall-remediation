@@ -13,6 +13,7 @@ provider "google-beta" {
 provider "archive" {
   version = "1.1"
 }
+
 resource "google_logging_organization_sink" "firewall-insert-log-sink" {
     name             = "${var.org_id}-firewall-insert-log-sink"
     org_id           = "${var.org_id}"
