@@ -45,7 +45,7 @@ terraform apply
 6. Open Cloudshell and create a firewall rule using the command below
 
 ```
-gcloud compute firewall-rules create demo-rule --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create demo-rule --direction=INGRESS --priority=1000 --network=$(terraform output network_name) --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
 ```
 
 7. Navigate to the Firewall just created in the [Firewall Rules Page](https://console.cloud.google.com/networking/firewalls/) in the Google Cloud Console and.
