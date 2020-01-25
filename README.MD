@@ -5,10 +5,14 @@ The Terraform module is used to demonstrate the concepts discussed in [Article](
 ## Prerequisites 
 
 The user running terraform must have the following permissions:
+
+At the organization level:
 * Organizaton Administrator
+* Logging Administrator
+
+At the project level:
 * PubSub Administrator
 * CloudFunction Administrator
-* Logging Administrator
 * Storage Administrator
 
 ## Usage
