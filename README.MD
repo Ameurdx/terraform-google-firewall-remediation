@@ -4,7 +4,9 @@ The Terraform module is used to demonstrate the concepts discussed in [Article](
 
 ## Prerequisites 
 
-The user running terraform must have the following permissions:
+Due to changes in the GCP provider, you can only deploy CloudFunctions with Terraform when using a Service Account.  See [Github Issue](https://github.com/terraform-providers/terraform-provider-google/issues/5388)
+
+The service account running terraform must have the following permissions:
 
 At the organization level:
 * Organizaton Administrator
@@ -33,9 +35,12 @@ cat > terraform.auto.tfvars <<EOF
 EOF
 ```
 
-4. Authenticate to Google Cloud using Application Default Credentials
+4. Authenticate your Service Account Google Cloud in one of ways defined in the [Terraform Documentation](https://www.terraform.io/docs/providers/google/guides/provider_reference.html)
 ```
-gcloud auth application-default login
+gcloud auth activate-service-account
+```
+```
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/yourSAKey.json
 ```
 
 5. Run Terraform
