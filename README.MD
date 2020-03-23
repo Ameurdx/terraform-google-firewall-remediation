@@ -14,7 +14,7 @@ At the organization level:
 
 At the project level:
 * PubSub Administrator
-* CloudFunction Administrator
+* Cloud Functions Administrator
 * Storage Administrator
 
 ## Usage
@@ -31,7 +31,7 @@ cd terraform-google-firewall-remediation
 ```
 cat > terraform.auto.tfvars <<EOF
   org_id                       = "<<replace with your org id>>"
-  project                      = "<<replace with your project id"
+  project                      = "<<replace with your project id>>"
 EOF
 ```
 
